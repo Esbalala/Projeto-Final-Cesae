@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeSecure Project - Dashboard de Gestão</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .card h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-left: 5px solid #667eea;
+            padding-left: 15px;
+        }
+
+        .card h3 {
+            color: #4a5568;
+            margin: 20px 0 10px 0;
+            font-size: 1.3em;
+        }
+
+        .task-list {
+            list-style: none;
+        }
+
+        .task-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f7fafc;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            transition: all 0.3s;
+            border-left: 4px solid transparent;
+        }
+
+        .task-item:hover {
+            background: #edf2f7;
+            border-left-color: #667eea;
+        }
+
+        .task-item.completed {
+            opacity: 0.7;
+            background: #c6f6d5;
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .task-description {
+            color: #718096;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .deliverable-tag {
+            display: inline-block;
+            background: #fbd38d;
+            color: #744210;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .enhancement-tag {
+            display: inline-block;
+            background: #9ae6b4;
+            color: #22543d;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .critical-tag {
+            display: inline-block;
+            background: #fc8181;
+            color: #742a2a;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .tip-box {
+            background: #edf2f7;
+            border-left: 5px solid #4299e1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .tip-box h4 {
+            color: #2c5282;
+            margin-bottom: 10px;
+        }
+
+        .tip-box p {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        .architecture-diagram {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .phase-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .phase-1 { background: #bee3f8; color: #2c5282; }
+        .phase-2 { background: #c6f6d5; color: #22543d; }
+        .phase-3 { background: #fbb6ce; color: #702459; }
+        .phase-4 { background: #fbd38d; color: #744210; }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ CodeSecure Project Dashboard</h1>
+            <p>Projeto Final Integrador - CyberSecurity | Redes | Administração de Sistemas</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">0% Completo</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('overview')">📊 Visão Geral</div>
+            <div class="tab" onclick="showTab('phase1')">🌐 Fase 1: Redes</div>
+            <div class="tab" onclick="showTab('phase2')">💻 Fase 2: Sistemas</div>
+            <div class="tab" onclick="showTab('phase3')">🔒 Fase 3: CyberSecurity</div>
+            <div class="tab" onclick="showTab('phase4')">📈 Fase 4: SIEM & Logs</div>
+            <div class="tab" onclick="showTab('enhancements')">⭐ Melhorias Extra</div>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="content-section active">
+            <div class="grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalTasks">42</div>
+                    <div class="stat-label">Tarefas Totais</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedTasks">0</div>
+                    <div class="stat-label">Tarefas Concluídas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">7</div>
+                    <div class="stat-label">Entregáveis (VMs + Docs)</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📋 Sobre o Projeto</h2>
+                <p style="color: #4a5568; line-height: 1.8; margin-bottom: 20px;">
+                    <strong>Empresa:</strong> CodeSecure, Lda.<br>
+                    <strong>Área:</strong> Desenvolvimento de software e alojamento de websites<br>
+                    <strong>Dimensão:</strong> ~40 funcionários, 120 sites alojados, 14 VMs de clientes externos<br>
+                    <strong>Departamentos:</strong> RH, Programação, Suporte Técnico, Infraestrutura/Datacenter
+                </p>
+
+                <div class="tip-box">
+                    <h4>💡 Dica Principal</h4>
+                    <p>Este projeto simula um ambiente empresarial real. Documenta TUDO - screenshots, comandos, decisões e justificações. O relatório técnico vale tanto quanto a implementação!</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>🎯 Entregáveis Obrigatórios</h2>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">1. Ficheiro Packet Tracer (.pkt)</div>
+                            <div class="task-description">Topologia completa com endereçamento IP, VLANs, redundância, firewall rules</div>
+                            <span class="deliverable-tag">📦 ENTREGÁVEL</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">2. VM - Controlador de Domínio (AD)</div>
+                            <div class="task-description">Windows Server com Active Directory configurado para rede interna</div>
+                            <span class="deliverable-tag">📦 ENTREGÁVEL</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">3. VM - Servidor Vulnerável Analisado</div>
+                            <div class="task-description">Documentação completa de reconhecimento e testes de penetração</div>
+                            <span class="deliverable-tag">📦 ENTREGÁVEL</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">4. VM - Servidor Hardened (substituto)</div>
+                            <div class="task-description">Novo servidor configurado e protegido com todas as medidas de segurança</div>
+                            <span class="deliverable-tag">📦 ENTREGÁVEL</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">5. VM - Servidor de Logs Centralizado</div>
+                            <div class="task-description">Sistema de centralização de logs (ex: Syslog, ELK Stack)</div>
+                            <span class="deliverable-tag">📦 ENTREGÁVEL</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">6. VM - SIEM</div>
+                            <div class="task-description">Wazuh, Splunk ou similar com dashboards e alertas configurados</div>
+                            <span class="deliverable-tag">📦 ENTREGÁVEL</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">7. Relatório Técnico Completo</div>
+                            <div class="task-description">Documentação de arquitetura, justificações, análises, diagramas e evidências</div>
+                            <span class="deliverable-tag">📦 ENTREGÁVEL</span>
+                            <span class="critical-tag">🔥 CRÍTICO</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Phase 1: Networks -->
+        <div id="phase1" class="content-section">
+            <div class="card">
+                <span class="phase-badge phase-1">FASE 1</span>
+                <h2>🌐 Planeamento e Implementação de Redes</h2>
+                
+                <h3>Tarefas Obrigatórias:</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Desenhar topologia de rede completa</div>
+                            <div class="task-description">Incluir todos os departamentos, datacenter, DMZ e conexões externas</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Planear esquema de endereçamento IP</div>
+                            <div class="task-description">Usar sub-redes adequadas por departamento (sugiro /24 ou /25)</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Implementar VLANs por departamento</div>
+                            <div class="task-description">RH, Programação, Suporte Técnico, Infraestrutura, DMZ, Gestão</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Configurar DMZ para serviços públicos</div>
+                            <div class="task-description">Web servers, DNS público, Mail gateway</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Implementar redundância de rede</div>
+                            <div class="task-description">HSRP/VRRP para gateways, link aggregation, múltiplos caminhos</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Configurar firewall com zonas de segurança</div>
+                            <div class="task-description">Definir políticas de acesso entre zonas (Inside, DMZ, Outside)</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Documentar regras de firewall</div>
+                            <div class="task-description">Criar tabela com: Source, Destination, Service, Action, Justificação</div>
+                            <span class="critical-tag">🔥 IMPORTANTE</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Implementar ACLs nos routers/switches</div>
+                            <div class="task-description">Controlar tráfego inter-VLAN conforme necessidades de negócio</div>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="tip-box">
+                    <h4>💡 Sugestões de Arquitetura</h4>
+                    <p><strong>Segmentação sugerida:</strong></p>
+                    <p>• VLAN 10 - Gestão (10.0.10.0/24)<br>
+                    • VLAN 20 - RH (10.0.20.0/24)<br>
+                    • VLAN 30 - Programação (10.0.30.0/24)<br>
+                    • VLAN 40 - Suporte (10.0.40.0/24)<br>
+                    • VLAN 50 - Infraestrutura (10.0.50.0/24)<br>
+                    • VLAN 100 - DMZ (192.168.100.0/24)<br>
+                    • VLAN 200 - Datacenter Clientes (10.0.200.0/23)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 2: Systems -->
+        <div id="phase2" class="content-section">
+            <div class="card">
+                <span class="phase-badge phase-2">FASE 2</span>
+                <h2>💻 Administração de Sistemas</h2>
+                
+                <h3>Controlador de Domínio (Active Directory):</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Instalar Windows Server 2019/2022</div>
+                            <div class="task-description">Configuração inicial, IP estático, hostname adequado</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Instalar e configurar AD DS</div>
+                            <div class="task-description">Promover a DC, criar domínio (ex: codesecure.local)</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Criar estrutura de OUs</div>
+                            <div class="task-description">Departamentos: RH, Programação, Suporte, Infraestrutura, Servidores</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Criar utilizadores e grupos</div>
+                            <div class="task-description">Pelo menos 5-10 users por departamento, grupos de segurança apropriados</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Implementar GPOs de segurança</div>
+                            <div class="task-description">Política de passwords, lockout, firewall, restrições USB, etc.</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Configurar DNS integrado com AD</div>
+                            <div class="task-description">Zonas forward/reverse, registos necessários</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Aplicar hardening ao servidor AD</div>
+                            <div class="task-description">Desativar serviços desnecessários, updates, auditoria, backup</div>
+                        </div>
+                    </li>
+                </ul>
+
+                <h3>Outros Servidores (opcional mas valorizado):</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">File Server com quotas e permissões</div>
+                            <div class="task-description">Shares por departamento com NTFS permissions adequadas</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">DHCP Server</div>
+                            <div class="task-description">Scopes por VLAN, reservas para servidores</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="tip-box">
+                    <h4>💡 Boas Práticas de Hardening</h4>
+                    <p>✓ Desativar SMBv1<br>
+                    ✓ Configurar Windows Firewall<br>
+                    ✓ Ativar auditoria de eventos de segurança<br>
+                    ✓ Implementar Least Privilege<br>
+                    ✓ Usar contas de serviço dedicadas (MSA/gMSA)<br>
+                    ✓ Patches e atualizações regulares</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 3: CyberSecurity -->
+        <div id="phase3" class="content-section">
+            <div class="card">
+                <span class="phase-badge phase-3">FASE 3</span>
+                <h2>🔒 CyberSecurity - Testes de Penetração</h2>
+                
+                <h3>Reconhecimento e Análise do Servidor Vulnerável:</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Reconhecimento passivo (OSINT)</div>
+                            <div class="task-description">Whois, DNS lookup, Google dorking, Shodan (se aplicável)</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Port scanning (nmap)</div>
+                            <div class="task-description">Identificar portas abertas e serviços: nmap -sV -sC -p- [IP]</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Enumeração de serviços</div>
+                            <div class="task-description">Banner grabbing, versões de software, tecnologias utilizadas</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Vulnerability scanning</div>
+                            <div class="task-description">Nessus, OpenVAS, ou Nikto para web servers</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Análise de vulnerabilidades web (se aplicável)</div>
+                            <div class="task-description">OWASP Top 10: SQLi, XSS, directory traversal, etc.</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Mapear ataques ao MITRE ATT&CK</div>
+                            <div class="task-description">Identificar técnicas: T1046 (Network Service Scanning), T1190 (Exploit Public-Facing App), etc.</div>
+                            <span class="critical-tag">🔥 IMPORTANTE</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Documentar todas as descobertas</div>
+                            <div class="task-description">Screenshots, outputs de comandos, CVEs encontradas, severidade (CVSS)</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Criar relatório de análise de risco</div>
+                            <div class="task-description">Para cada vulnerabilidade: Impacto, Probabilidade, Risco, Recomendação</div>
+                        </div>
+                    </li>
+                </ul>
+
+                <h3>Novo Servidor Hardened (Substituição):</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Instalar SO com instalação mínima</div>
+                            <div class="task-description">Ubuntu Server / CentOS / Debian - sem GUI desnecessária</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Aplicar todas as atualizações de segurança</div>
+                            <div class="task-description">apt update && apt upgrade -y (ou equivalente)</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Configurar firewall (UFW/iptables)</div>
+                            <div class="task-description">Deny all by default, allow only necessary ports</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Hardening SSH</div>
+                            <div class="task-description">Disable root login, use key-based auth, change port, fail2ban</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Implementar serviço web seguro</div>
+                            <div class="task-description">Nginx/Apache com TLS 1.3, HTTP security headers, mod_security</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Configurar SELinux/AppArmor</div>
+                            <div class="task-description">Mandatory Access Control ativo e enforcing</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Implementar auditoria (auditd)</div>
+                            <div class="task-description">Logging de eventos críticos de sistema</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Aplicar CIS Benchmark</div>
+                            <div class="task-description">Seguir guia CIS para o OS escolhido</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="tip-box">
+                    <h4>💡 Ferramentas Recomendadas</h4>
+                    <p><strong>Scanning:</strong> Nmap, Nessus, OpenVAS, Nikto<br>
+                    <strong>Web Testing:</strong> Burp Suite, OWASP ZAP, SQLMap<br>
+                    <strong>Enumeration:</strong> enum4linux, SMBMap, gobuster<br>
+                    <strong>Hardening:</strong> Lynis, OpenSCAP, CIS-CAT</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phase 4: SIEM & Logs -->
+        <div id="phase4" class="content-section">
+            <div class="card">
+                <span class="phase-badge phase-4">FASE 4</span>
+                <h2>📈 SIEM e Monitorização de Logs</h2>
+                
+                <h3>Servidor de Logs Centralizado:</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Escolher solução de log management</div>
+                            <div class="task-description">Rsyslog, Syslog-ng, ou ELK Stack (Elasticsearch, Logstash, Kibana)</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Instalar e configurar servidor de logs</div>
+                            <div class="task-description">Recepção de logs via syslog (UDP 514 ou TCP 514/6514 com TLS)</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Configurar envio de logs dos sistemas</div>
+                            <div class="task-description">AD, servidores Linux, firewall, switches → log server</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Organizar logs por fonte/categoria</div>
+                            <div class="task-description">Separar auth logs, system logs, application logs, security logs</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Implementar retenção de logs</div>
+                            <div class="task-description">Política de rotação: 90 dias online, arquivamento para compliance</div>
+                        </div>
+                    </li>
+                </ul>
+
+                <h3>SIEM (Security Information and Event Management):</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Escolher plataforma SIEM</div>
+                            <div class="task-description">Wazuh (recomendado), Splunk Free, Security Onion, OSSIM</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Instalar SIEM manager</div>
+                            <div class="task-description">Seguir documentação oficial, configurar elasticsearch/kibana se Wazuh</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Deploy agents nos endpoints</div>
+                            <div class="task-description">Instalar Wazuh agents em AD, servers, e máquinas críticas</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Configurar regras de deteção</div>
+                            <div class="task-description">Failed logins, privilege escalation, port scanning, file integrity</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Criar dashboards de monitorização</div>
+                            <div class="task-description">Security events, top alerts, authentication attempts, vulnerabilities</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Configurar alertas automáticos</div>
+                            <div class="task-description">Email/webhook para eventos críticos (threshold-based)</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Simular cenários de ataque</div>
+                            <div class="task-description">Gerar eventos: brute force SSH, port scan, file modification</div>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Documentar incidentes detetados</div>
+                            <div class="task-description">Screenshot de alertas, investigação, timeline, resposta</div>
+                            <span class="critical-tag">🔥 IMPORTANTE</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Implementar resposta automatizada (se possível)</div>
+                            <div class="task-description">Active Response: block IP after X failed attempts, disable user</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="tip-box">
+                    <h4>💡 Eventos Críticos para Monitorizar</h4>
+                    <p>✓ Múltiplas autenticações falhadas (Event ID 4625 no Windows)<br>
+                    ✓ Criação de novos utilizadores/grupos (4720, 4726, 4728)<br>
+                    ✓ Mudanças em ficheiros críticos (FIM - File Integrity Monitoring)<br>
+                    ✓ Scans de portas (múltiplas conexões em curto espaço de tempo)<br>
+                    ✓ Escalação de privilégios (uso de sudo, SeDebugPrivilege)<br>
+                    ✓ Processos suspeitos (mining, reverse shells)<br>
+                    ✓ Tráfego para IPs maliciosos (threat intelligence feeds)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhancements Section -->
+        <div id="enhancements" class="content-section">
+            <div class="card">
+                <h2>⭐ Melhorias e Funcionalidades Extra</h2>
+                <p style="color: #4a5568; margin-bottom: 20px;">Estas funcionalidades NÃO são obrigatórias mas vão destacar o teu projeto e demonstrar conhecimento aprofundado!</p>
+                
+                <h3>🔒 Segurança Avançada:</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Implementar IDS/IPS (Snort/Suricata)</div>
+                            <div class="task-description">Deteção e prevenção de intrusões na fronteira da rede</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">WAF (Web Application Firewall)</div>
+                            <div class="task-description">ModSecurity com OWASP Core Rule Set nos web servers</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">VPN para acesso remoto seguro</div>
+                            <div class="task-description">OpenVPN ou WireGuard com MFA</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Honeypot para deteção precoce</div>
+                            <div class="task-description">Cowrie (SSH), Dionaea ou T-Pot</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Network Segmentation com micro-segmentation</div>
+                            <div class="task-description">Zero Trust Architecture parcial</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <h3>📊 Monitorização e Gestão:</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Vulnerability Management contínuo</div>
+                            <div class="task-description">OpenVAS/Nessus com scans agendados e tracking de remediação</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Patch Management automatizado</div>
+                            <div class="task-description">WSUS para Windows, Ansible/Puppet para Linux</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Backup e Disaster Recovery</div>
+                            <div class="task-description">Estratégia 3-2-1, automação, testes de restore</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Network monitoring (Nagios/Zabbix)</div>
+                            <div class="task-description">Uptime, performance, bandwidth utilization</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <h3>📝 Compliance e Governação:</h3>
+                <ul class="task-list">
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">GDPR Compliance assessment</div>
+                            <div class="task-description">Data mapping, privacy by design, DPO considerations</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Incident Response Plan</div>
+                            <div class="task-description">Playbooks para cenários comuns (ransomware, data breach, DDoS)</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                    <li class="task-item">
+                        <input type="checkbox" class="task-checkbox" onchange="updateProgress()">
+                        <div class="task-content">
+                            <div class="task-title">Security Awareness simulation</div>
+                            <div class="task-description">Phishing campaign simulada, métricas de cliques</div>
+                            <span class="enhancement-tag">⭐ EXTRA</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <div class="tip-box">
+                    <h4>💡 Como Destacar o Teu Projeto</h4>
+                    <p><strong>Escolhe 2-3 extras</strong> que demonstrem skills diferentes (não tentes fazer tudo):<br>
+                    • Se fores forte em redes → IDS/IPS + VPN<br>
+                    • Se gostas de automation → Patch Management + Ansible<br>
+                    • Se queres brilhar em security → WAF + Honeypot + Threat Intelligence<br>
+                    <br>
+                    <strong>Documenta o PORQUÊ:</strong> Não basta implementar, tens que justificar porque escolheste cada solução e como ela beneficia a CodeSecure especificamente!</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📄 Dicas para o Relatório Técnico</h2>
+                
+                <h3>Estrutura Sugerida:</h3>
+                <ol style="color: #4a5568; line-height: 2; margin-left: 20px;">
+                    <li><strong>Executive Summary</strong> - Resumo para gestão (1-2 páginas)</li>
+                    <li><strong>Introdução</strong> - Contexto da empresa, objetivos do projeto</li>
+                    <li><strong>Arquitetura de Rede</strong>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Topologia e diagrama Packet Tracer</li>
+                            <li>Esquema de endereçamento IP</li>
+                            <li>VLANs e segmentação</li>
+                            <li>Justificação das decisões</li>
+                        </ul>
+                    </li>
+                    <li><strong>Infraestrutura de Sistemas</strong>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Active Directory: estrutura, OUs, GPOs</li>
+                            <li>Servidores implementados</li>
+                            <li>Medidas de hardening aplicadas</li>
+                        </ul>
+                    </li>
+                    <li><strong>Análise de Segurança</strong>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Metodologia de pentesting</li>
+                            <li>Vulnerabilidades encontradas</li>
+                            <li>Mapeamento MITRE ATT&CK</li>
+                            <li>Assessment de risco</li>
+                        </ul>
+                    </li>
+                    <li><strong>Servidor Hardened</strong>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Configurações aplicadas</li>
+                            <li>Comparação antes/depois</li>
+                            <li>Validação de segurança</li>
+                        </ul>
+                    </li>
+                    <li><strong>SIEM e Monitorização</strong>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>Arquitetura de logging</li>
+                            <li>Configuração do SIEM</li>
+                            <li>Use cases e regras</li>
+                            <li>Exemplos de incidentes detetados</li>
+                        </ul>
+                    </li>
+                    <li><strong>Conclusões e Recomendações</strong></li>
+                    <li><strong>Anexos</strong> - Outputs técnicos, screenshots, configurações</li>
+                </ol>
+
+                <div class="tip-box">
+                    <h4>💡 Elementos que Impressionam</h4>
+                    <p>✓ Diagramas profissionais (usa draw.io, Visio, ou Lucidchart)<br>
+                    ✓ Screenshots bem anotados com explicações<br>
+                    ✓ Tabelas comparativas (antes/depois, risk matrix)<br>
+                    ✓ Referências a frameworks (NIST, CIS, ISO 27001, MITRE)<br>
+                    ✓ Métricas concretas (% de vulnerabilidades remediadas, tempo de deteção)<br>
+                    ✓ Roadmap futuro (próximos passos para melhorar a segurança)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function showTab(tabName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(tabName).classList.add('active');
+            
+            // Mark tab as active
+            event.target.classList.add('active');
+        }
+
+        // Progress tracking
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const total = checkboxes.length;
+            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const percentage = Math.round((completed / total) * 100);
+            
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = percentage + '%';
+            progressBar.textContent = percentage + '% Completo';
+            
+            document.getElementById('completedTasks').textContent = completed;
+            
+            // Save state to localStorage
+            saveState();
+        }
+
+        // Save checkbox states
+        function saveState() {
+            const checkboxes = document.querySelectorAll('.task-checkbox');
+            const states = Array.from(checkboxes).map(cb => cb.checked);
+            localStorage.setItem('projectProgress', JSON.stringify(states));
+        }
+
+        // Load checkbox states
+        function loadState() {
+            const saved = localStorage.getItem('projectProgress');
+            if (saved) {
+                const states = JSON.parse(saved);
+                const checkboxes = document.querySelectorAll('.task-checkbox');
+                states.forEach((state, index) => {
+                    if (checkboxes[index]) {
+                        checkboxes[index].checked = state;
+                        if (state) {
+                            checkboxes[index].closest('.task-item').classList.add('completed');
+                        }
+                    }
+                });
+                updateProgress();
+            }
+        }
+
+        // Toggle completed class on checkbox change
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('task-checkbox')) {
+                const taskItem = e.target.closest('.task-item');
+                if (e.target.checked) {
+                    taskItem.classList.add('completed');
+                } else {
+                    taskItem.classList.remove('completed');
+                }
+            }
+        });
+
+        // Load state on page load
+        window.addEventListener('load', loadState);
+    </script>
+</body>
+</html>
